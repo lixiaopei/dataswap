@@ -5,18 +5,21 @@
 
 class UnitMemCache {
 public:
-  UnitMemCache(uint32_t aSize);
+  UnitMemCache(unsigned int per_mem_size = 128 * 1024);
   ~UnitMemCache();
   int FreeUnit(char *aMem);
-  char *MallocUnit();
-  inline uint32_t GetUnitMemSize() { return per_mem_size_; }
+  char *MallocUnit(unsigned int mem_limit = 0);
+  inline void SetUnitMemSize(unsigned int per_mem_size) {
+    per_mem_size_ = per_mem_size;
+  }
+  inline unsigned int GetUnitMemSize() { return per_mem_size_; }
 
 protected:
-  UnitHeap *createHeap();
+  UnitHeap *CreateHeap();
 
 protected:
   CMutex locker_;
-  uint32_t per_mem_size_;
+  unsigned int per_mem_size_;
   std::list<UnitHeap *> heap_list_;
   UnitHeap *last_heap_;
 };

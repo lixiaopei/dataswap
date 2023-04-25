@@ -15,7 +15,7 @@ struct UnitHeapHeader {
 
 template <class T_MAX_SPACE = 4096000> class UnitHeap {
 public:
-  UnitHeap(int aPerMemSize, int aMemCount);
+  UnitHeap(int per_mem_size, int mem_count);
   ~UnitHeap();
 
 public:
@@ -24,6 +24,7 @@ public:
   UnitHeapStatus CheckSpace();
   char *MallocUnit();
   UnitHeap *FreeUnit(char *dt);
+  int GetAllocedSpace() { return per_mem_size_ * mem_count_; }
 
 public:
   static UnitHeap *FreePureMem(char *dt);

@@ -1,7 +1,7 @@
 #include "unit_mem_cache.h"
 
-UnitMemCache::UnitMemCache(uint32_t aSize) {
-  per_mem_size_ = aSize;
+UnitMemCache::UnitMemCache(unsigned int per_mem_size) {
+  per_mem_size_ = per_mem_size;
   last_heap_ = 0;
 }
 
@@ -63,12 +63,13 @@ int UnitMemCache::FreeUnit(char *aMem) {
   return 0;
 }
 
-char *UnitMemCache::MallocUnit() {
+char *UnitMemCache::MallocUnit(unsigned int mem_limit) {
   char *ret = 0;
   locker_.lock();
   if (last_heap_ && last_heap_->CheckSpace() != UNIT_HEAP_FULL) {
     ret = last_heap_->MallocUnit();
   } else {
+    unsigned int alloc_size = 0;
     std::list<UnitHeap *>::iterator ite;
     for (ite = heap_list_.begin(); ite != heap_list_.end(); ite++) {
       if ((*ite)->CheckSpace() != UNIT_HEAP_FULL) {
@@ -76,18 +77,16 @@ char *UnitMemCache::MallocUnit() {
         ret = last_heap_->MallocUnit();
         break;
       }
+      alloc_size += (*ite)->GetAllocSpace();
     }
-    if (ret == 0) {
+    if (ret == 0 && (mem_limit == 0 || (alloc_size < mem_limit))) {
       UnitHeap *sHeap = this->CreateHeap();
       if (sHeap) {
         heap_list_.push_back(sHeap);
         last_heap_ = sHeap;
         ret = last_heap_->MallocUnit();
       } else {
-        if (Env::debug() >= 1) {
-          FL::g()->write(
-              "RdpMemCache malloc memory failt when create new heap!");
-        }
+        // failed to create heap
       }
     }
   }

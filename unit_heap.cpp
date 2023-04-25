@@ -1,9 +1,9 @@
 #include "unit_heap.h"
 
 #define D_MEM_HEAP_FLAG 0x83062521
-UnitHeap::UnitHeap(int32_t a_per_mem_size, int32_t a_mem_count) {
+UnitHeap::UnitHeap(int a_per_mem_size, int a_mem_count) {
   const int s_max_size = T_MAX_SPACE;
-  int32_t s_total_mem_size = s_max_size;
+  int s_total_mem_size = s_max_size;
 
   UnitHeapHeader *p_current_header = NULL;
   UnitHeapHeader *p_previous_header = NULL;
